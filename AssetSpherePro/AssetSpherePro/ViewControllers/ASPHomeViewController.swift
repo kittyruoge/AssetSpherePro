@@ -388,17 +388,17 @@ final class ASPHomeViewController: ASPBaseViewController {
     }
 
     private func asp_presentAddAsset() {
-        let vc = ASPAddAssetViewController()
-        vc.onSaved = { [weak self] in self?.asp_rebuild() }
-        let nav = UINavigationController(rootViewController: vc)
-        nav.modalPresentationStyle = .fullScreen
-        present(nav, animated: true)
+//        let vc = ASPAddAssetViewController()
+//        vc.onSaved = { [weak self] in self?.asp_rebuild() }
+//        let nav = UINavigationController(rootViewController: vc)
+//        nav.modalPresentationStyle = .fullScreen
+//        present(nav, animated: true)
     }
 
     private func asp_presentDetail(_ asset: ASPAssetModel) {
-        let vc = ASPAssetDetailViewController(asset: asset)
-        vc.onChanged = { [weak self] in self?.asp_rebuild() }
-        navigationController?.pushViewController(vc, animated: true)
+//        let vc = ASPAssetDetailViewController(asset: asset)
+//        vc.onChanged = { [weak self] in self?.asp_rebuild() }
+//        navigationController?.pushViewController(vc, animated: true)
     }
 
     // MARK: - Actions

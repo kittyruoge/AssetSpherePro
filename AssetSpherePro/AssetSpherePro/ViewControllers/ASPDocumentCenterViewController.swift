@@ -84,8 +84,8 @@ final class ASPDocumentCenterViewController: ASPBaseViewController,
         for document in documents {
             let card = ASPDocumentCardView()
             card.asp_configure(document: document)
-            let tap = ASPTapGesture { [weak self] in self?.asp_preview(document) }
-            card.addGestureRecognizer(tap)
+//            let tap = ASPTapGesture { [weak self] in self?.asp_preview(document) }
+//            card.addGestureRecognizer(tap)
 
             let longPress = UILongPressGestureRecognizer(target: self, action: #selector(asp_longPress(_:)))
             card.addGestureRecognizer(longPress)
