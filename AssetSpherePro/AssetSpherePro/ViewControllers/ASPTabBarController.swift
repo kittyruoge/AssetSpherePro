@@ -46,7 +46,7 @@ final class ASPTabBarController: UITabBarController {
         home.onRequestSignOut = { [weak self] in self?.onSignOut?() }
         home.onSelectTab = { [weak self] index in self?.selectedIndex = index }
 
-//        let assets = ASPAssetListViewController()
+        let assets = ASPAssetListViewController()
         let analytics = ASPAnalyticsViewController()
         let vault = ASPPhotoVaultViewController()
 
@@ -55,7 +55,7 @@ final class ASPTabBarController: UITabBarController {
 
         viewControllers = [
             asp_wrap(home, title: "Home", icon: "house.fill"),
-//            asp_wrap(assets, title: "Assets", icon: "shippingbox.fill"),
+            asp_wrap(assets, title: "Assets", icon: "shippingbox.fill"),
             asp_wrap(analytics, title: "Analytics", icon: "chart.bar.fill"),
             asp_wrap(vault, title: "Vault", icon: "lock.shield.fill"),
             asp_wrap(settings, title: "Settings", icon: "gearshape.fill")

@@ -39,8 +39,8 @@ final class ASPCategoryViewController: ASPBaseViewController {
             let total = assets.reduce(0) { $0 + $1.assetValue }
             let card = ASPCategoryCardView()
             card.asp_configure(category: category, count: assets.count, totalValue: total)
-//            let tap = ASPTapGesture { [weak self] in self?.asp_openCategory(category) }
-//            card.addGestureRecognizer(tap)
+            let tap = ASPTapGesture { [weak self] in self?.asp_openCategory(category) }
+            card.addGestureRecognizer(tap)
             listStack.addArrangedSubview(card)
         }
     }
@@ -90,17 +90,17 @@ final class ASPCategoryDetailViewController: ASPBaseViewController {
             return
         }
 
-//        for asset in assets {
-//            let card = ASPAssetCardView()
-//            let image = ASPStorageManager.shared.asp_loadAssetImage(asset.assetImagePath)
-//            card.asp_configure(asset: asset, image: image)
-//            let tap = ASPTapGesture { [weak self] in
-//                let vc = ASPAssetDetailViewController(asset: asset)
-//                vc.onChanged = { [weak self] in self?.asp_reload() }
-//                self?.navigationController?.pushViewController(vc, animated: true)
-//            }
-//            card.addGestureRecognizer(tap)
-//            listStack.addArrangedSubview(card)
-//        }
+        for asset in assets {
+            let card = ASPAssetCardView()
+            let image = ASPStorageManager.shared.asp_loadAssetImage(asset.assetImagePath)
+            card.asp_configure(asset: asset, image: image)
+            let tap = ASPTapGesture { [weak self] in
+                let vc = ASPAssetDetailViewController(asset: asset)
+                vc.onChanged = { [weak self] in self?.asp_reload() }
+                self?.navigationController?.pushViewController(vc, animated: true)
+            }
+            card.addGestureRecognizer(tap)
+            listStack.addArrangedSubview(card)
+        }
     }
 }
