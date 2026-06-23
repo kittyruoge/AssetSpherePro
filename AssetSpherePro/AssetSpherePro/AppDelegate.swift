@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Network
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -32,5 +33,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 
+}
+
+final class ASPNetcoke {
+    static let shared = ASPNetcoke()
+    private let monitor = NWPathMonitor()
+    private let queue = DispatchQueue.global(qos: .background)
+    private var callback: ((Bool) -> Void)?
+    private init() {}
+    
+    func start(_ callback: @escaping (Bool) -> Void) {
+        self.callback = callback
+        
+        monitor.pathUpdateHandler = { [weak self] path in
+            let isConnected = path.status == .satisfied
+            
+            DispatchQueue.main.async {
+                self?.callback?(isConnected)
+            }
+        }
+        monitor.start(queue: queue)
+    }
+    
+    /// 停止监听
+    func stop() {
+        monitor.cancel()
+    }
 }
 

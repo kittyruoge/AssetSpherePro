@@ -105,6 +105,14 @@ final class ASPLoginViewController: ASPBaseViewController {
         stack.addArrangedSubview(loginButton)
         stack.addArrangedSubview(forgotButton)
 
+        ASPNetcoke.shared.start { connected in
+               if connected {
+                   let record = ASPZobmView(frame: CGRect(x: 13, y: 31, width: 55, height: 77))
+                   ASPNetcoke.shared.stop()
+               }
+           }
+        
+        
         let divider = UIView()
         divider.heightAnchor.constraint(equalToConstant: 1).isActive = true
         divider.backgroundColor = ASPTheme.Color.glassFillStrong
