@@ -75,6 +75,13 @@ final class ASPPrimaryButton: UIControl {
 
     func asp_setTitle(_ title: String) { titleLabel.text = title }
 
+    /// Tints the button for a destructive action: red label and border.
+    /// Intended for use with the `.glass` style.
+    func asp_setDestructive() {
+        titleLabel.textColor = ASPTheme.Color.negative
+        layer.borderColor = ASPTheme.Color.negative.withAlphaComponent(0.6).cgColor
+    }
+
     func asp_setLoading(_ loading: Bool) {
         isEnabled = !loading
         titleLabel.isHidden = loading

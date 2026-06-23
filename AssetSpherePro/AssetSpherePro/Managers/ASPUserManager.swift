@@ -148,6 +148,52 @@ final class ASPUserManager {
         UserDefaults.standard.set(false, forKey: Keys.rememberMe)
     }
 
+    // MARK: - Account deletion
+
+    /// Permanently deletes the signed-in account and all of its locally-stored
+    /// data. This is irreversible and cannot be undone.
+    ///
+    /// Because AssetSphere Pro is a fully on-device app (no server), deletion
+    /// removes everything tied to the account on this device:
+    ///   - the user record in Core Data and its Keychain password
+    ///   - all assets, photos, documents, and activity history
+    ///   - all files those records reference on disk
+    ///   - the session and demo-seeding state
+    ///
+    /// Guest sessions have nothing persisted, so this simply ends the session.
+    func asp_deleteAccount() {
+        // A guest has no stored account; just drop the in-memory session.
+        guard !isGuest, let user = currentUser else {
+            asp_logout()
+            return
+        }
+
+        // 1. Remove the user's record and stored credential.
+        if let object = object(forId: user.userId) {
+            stack.delete(object)
+            stack.save()
+        }
+        if !user.email.isEmpty {
+            ASPKeychainManager.shared.asp_deletePassword(account: user.email)
+        }
+
+        // 2. Wipe all user-generated content (records + files on disk).
+        stack.deleteAll(ASPCoreDataStack.Entity.asset)
+        stack.deleteAll(ASPCoreDataStack.Entity.photo)
+        stack.deleteAll(ASPCoreDataStack.Entity.document)
+        stack.deleteAll(ASPCoreDataStack.Entity.activity)
+        ASPStorageManager.shared.asp_wipeAllFiles()
+
+        // 3. Forget demo-seeding state for this account so a future account
+        //    starts clean.
+        var seeded = Set(UserDefaults.standard.stringArray(forKey: Keys.seededUserIds) ?? [])
+        seeded.remove(user.userId)
+        UserDefaults.standard.set(Array(seeded), forKey: Keys.seededUserIds)
+
+        // 4. End the session.
+        asp_logout()
+    }
+
     // MARK: - Password reset (local simulation)
 
     enum ResetResult {

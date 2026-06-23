@@ -12,6 +12,9 @@ import PhotosUI
 final class ASPProfileViewController: ASPBaseViewController,
     PHPickerViewControllerDelegate {
 
+    /// Called when the account is deleted, so the app can return to the auth flow.
+    var onAccountDeleted: (() -> Void)?
+
     private var contentStack: UIStackView!
     private let avatarView = ASPAvatarView(diameter: 96)
 
@@ -102,6 +105,64 @@ final class ASPProfileViewController: ASPBaseViewController,
         linksStack.addArrangedSubview(timelineItem)
         linksStack.addArrangedSubview(categoryItem)
         contentStack.addArrangedSubview(linksCard)
+
+        // Account deletion. Hidden for guest sessions, which have no stored
+        // account to delete.
+        if !ASPUserManager.shared.isGuest {
+            let deleteButton = ASPPrimaryButton(title: "Delete Account", style: .glass)
+            deleteButton.asp_setDestructive()
+            deleteButton.addTarget(self, action: #selector(asp_deleteAccountTapped), for: .touchUpInside)
+            contentStack.setCustomSpacing(28, after: linksCard)
+            contentStack.addArrangedSubview(deleteButton)
+
+            let note = UILabel()
+            note.text = "Permanently deletes your account and all associated data on this device. This cannot be undone."
+            note.font = ASPTheme.Font.caption()
+            note.textColor = ASPTheme.Color.textTertiary
+            note.numberOfLines = 0
+            note.textAlignment = .center
+            note.translatesAutoresizingMaskIntoConstraints = false
+            contentStack.setCustomSpacing(8, after: deleteButton)
+            contentStack.addArrangedSubview(note)
+        }
+    }
+
+    // MARK: - Account deletion
+
+    @objc private func asp_deleteAccountTapped() {
+        // First confirmation: explain the consequence.
+        asp_showConfirm(
+            title: "Delete Account?",
+            message: "This permanently deletes your account and all of your assets, photos, documents, and activity on this device. This action cannot be undone.",
+            confirmTitle: "Continue") { [weak self] in
+            self?.asp_confirmDeleteWithText()
+        }
+    }
+
+    /// Second confirmation: require the user to type DELETE so the action can't
+    /// happen by accident.
+    private func asp_confirmDeleteWithText() {
+        let alert = UIAlertController(
+            title: "Confirm Deletion",
+            message: "Type DELETE to permanently remove your account.",
+            preferredStyle: .alert)
+        alert.addTextField { tf in
+            tf.placeholder = "DELETE"
+            tf.autocapitalizationType = .allCharacters
+            tf.autocorrectionType = .no
+        }
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete Account", style: .destructive) { [weak self, weak alert] _ in
+            let typed = alert?.textFields?.first?.text?.asp_trimmed.uppercased() ?? ""
+            guard typed == "DELETE" else {
+                self?.asp_showAlert(title: "Not Deleted",
+                                    message: "Please type DELETE to confirm.")
+                return
+            }
+            ASPUserManager.shared.asp_deleteAccount()
+            self?.onAccountDeleted?()
+        })
+        present(alert, animated: true)
     }
 
     // MARK: - Actions

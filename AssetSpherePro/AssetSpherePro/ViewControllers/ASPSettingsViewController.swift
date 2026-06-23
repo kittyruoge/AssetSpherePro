@@ -46,7 +46,9 @@ final class ASPSettingsViewController: ASPBaseViewController {
             let profileItem = ASPSettingItemView()
             profileItem.asp_configure(icon: "person.crop.circle.fill", iconColor: ASPTheme.Color.accent,
                                       title: user.username, value: "Profile") { [weak self] in
-                self?.navigationController?.pushViewController(ASPProfileViewController(), animated: true)
+                let profile = ASPProfileViewController()
+                profile.onAccountDeleted = { [weak self] in self?.onSignOut?() }
+                self?.navigationController?.pushViewController(profile, animated: true)
             }
             accountStack.addArrangedSubview(profileItem)
         }

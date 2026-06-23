@@ -172,4 +172,14 @@ final class ASPCoreDataStack {
     func delete(_ object: NSManagedObject) {
         context.delete(object)
     }
+
+    /// Deletes every object of the given entity. Used by account deletion to
+    /// wipe all locally-stored records. Returns the number of objects removed.
+    @discardableResult
+    func deleteAll(_ entityName: String) -> Int {
+        let objects = fetch(entityName)
+        objects.forEach { context.delete($0) }
+        save()
+        return objects.count
+    }
 }

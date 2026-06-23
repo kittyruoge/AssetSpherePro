@@ -210,4 +210,21 @@ final class ASPStorageManager {
             return total + Int64(size)
         }
     }
+
+    // MARK: - Account deletion support
+
+    /// Removes every file managed by the app (asset images, imported documents,
+    /// and vault photos) from disk, then recreates the empty directories.
+    /// Called as part of deleting the account so no user content is left behind.
+    func asp_wipeAllFiles() {
+        for dir in [imagesDirectory, filesDirectory, photosDirectory] {
+            if let contents = try? fileManager.contentsOfDirectory(
+                at: dir, includingPropertiesForKeys: nil) {
+                for fileURL in contents {
+                    try? fileManager.removeItem(at: fileURL)
+                }
+            }
+        }
+        asp_createDirectoriesIfNeeded()
+    }
 }
